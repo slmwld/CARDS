@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estás Invitado a Nuestro Evento Especial</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .parallax-container {
+            position: relative;
+            height: 100vh;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+
+        .parallax-1 {
+            background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2070&auto=format&fit=crop');
+        }
+
+        .parallax-2 {
+            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2128&auto=format&fit=crop');
+            height: 60vh;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin: 0;
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+        }
+
+        .content-section {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: white;
+        }
+
+        .content-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .content-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 50px 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        
+        .rsvp-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .rsvp-form input, .rsvp-form button {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .rsvp-form button {
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .rsvp-form button:hover {
+            background-color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .hero-content p {
+                font-size: 1.2rem;
+            }
+
+            .parallax-container {
+                background-attachment: scroll; /* Desactiva el efecto parallax en móviles para un mejor rendimiento */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="parallax-container parallax-1">
+        <div class="hero-content">
+            <h1>¡Estás Invitado!</h1>
+            <p>Celebremos Juntos Nuestro Evento Especial</p>
+            <p>25 de Diciembre, 2025</p>
+        </div>
+    </div>
+
+    <div id="details" class="content-section">
+        <h2>Detalles del Evento</h2>
+        <p>
+            Nos complace invitarte a una noche de celebración, buena música y grandes amigos. Únete a nosotros para una velada inolvidable llena de alegría y momentos especiales.
+            <br><br>
+            <strong>Código de Vestimenta:</strong> Elegante Casual.
+        </p>
+    </div>
+
+    <div id="gallery" class="content-section">
+        <h2>Galería</h2>
+         <div class="gallery">
+            <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=2070&auto=format&fit=crop" alt="Imagen de galería 1">
+            <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2070&auto=format&fit=crop" alt="Imagen de galería 2">
+            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop" alt="Imagen de galería 3">
+        </div>
+    </div>
+    
+    <div class="parallax-container parallax-2"></div>
+
+    <div id="location" class="content-section">
+        <h2>Ubicación</h2>
+        <p>El evento se llevará a cabo en:</p>
+        <p><strong>Salón de Eventos "La Vista"</strong><br>Avenida Siempre Viva 742, Springfield</p>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.923487972124!2d-99.1332089855922!3d19.4326077869013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92f5a6b0b5f%3A0x9b0c7e2a9b0c7e2a!2sZ%C3%B3calo%2C%20Centro%20Hist%C3%B3rico%20de%20la%20Cdad.%20de%20M%C3%A9xico%2C%20Centro%2C%20Cuauht%C3%A9moc%2C%2006000%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1678886543210!5m2!1ses-419!2smx" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+
+    <div id="rsvp" class="content-section">
+        <h2>Confirma tu Asistencia</h2>
+        <form class="rsvp-form" onsubmit="return alert('¡Gracias por confirmar tu asistencia!');">
+            <input type="text" name="name" placeholder="Tu Nombre Completo" required>
+            <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
+            <button type="submit">Enviar Confirmación</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>© 2025 Nuestro Evento Especial. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>
