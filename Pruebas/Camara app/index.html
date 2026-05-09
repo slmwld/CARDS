@@ -97,12 +97,22 @@
             });
         }
 
-        // Función auxiliar: Crea un flujo de medios vacío (necesario porque PeerJS requiere enviar *algo* al llamar)
-        function crearFlujoVacio() {
-            let ctx = new AudioContext();
-            let dest = ctx.createMediaStreamDestination();
-            return dest.stream;
-        }
+       // Función auxiliar: Crea un flujo de audio y video vacío para forzar la conexión completa
+function crearFlujoVacio() {
+    // 1. Creamos el audio falso
+    let contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
+    let destinoAudio = contextoAudio.createMediaStreamDestination();
+    let pistaAudio = destinoAudio.stream.getAudioTracks()[0];
+
+    // 2. Creamos un video falso (un cuadro invisible de 1x1 píxel)
+    let lienzo = document.createElement('canvas');
+    lienzo.width = 1; 
+    lienzo.height = 1;
+    let pistaVideo = lienzo.captureStream(15).getVideoTracks()[0]; // 15 fps
+
+    // 3. Juntamos ambos y los enviamos
+    return new MediaStream([pistaAudio, pistaVideo]);
+}
     </script>
 </body>
 </html>
