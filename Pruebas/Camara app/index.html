@@ -91,10 +91,18 @@
             // Como somos el monitor, no enviamos video, por eso pasamos un flujo vacío
             const llamada = peer.call(idCamara, crearFlujoVacio());
 
-            // 2. Cuando la cámara conteste y nos mande su video, lo mostramos en pantalla
-            llamada.on('stream', function(flujoRemoto) {
-                document.getElementById('video-remoto').srcObject = flujoRemoto;
-            });
+           // 2. Cuando la cámara conteste y nos mande su video, lo mostramos en pantalla
+llamada.on('stream', function(flujoRemoto) {
+    const videoRemoto = document.getElementById('video-remoto');
+    videoRemoto.srcObject = flujoRemoto;
+    
+    // Le decimos al navegador que empiece a reproducir en cuanto carguen los datos
+    videoRemoto.onloadedmetadata = function() {
+        videoRemoto.play().catch(error => {
+            console.log("El navegador pausó el video automáticamente", error);
+        });
+    };
+});
         }
 
        // Función auxiliar: Crea un flujo de audio y video vacío para forzar la conexión completa
