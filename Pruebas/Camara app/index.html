@@ -3,61 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Cámara de Seguridad</title>
+    <title>Cámara de Seguridad P2P</title>
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
     <style>
-        body {
-            background-color: #111;
-            color: white;
-            text-align: center;
-            font-family: sans-serif;
-        }
-        /* Esto hace que el video ocupe un buen espacio en la pantalla */
-        video {
-            width: 90%;
-            max-width: 800px;
-            border: 2px solid #444;
-            border-radius: 8px;
-            margin-top: 20px;
-            background-color: #000;
-        }
+        body { background-color: #111; color: white; text-align: center; font-family: sans-serif; }
+        video { width: 90%; max-width: 600px; border: 2px solid #444; border-radius: 8px; margin-top: 20px; background-color: #000; }
+        .oculto { display: none; }
+        button, input { padding: 10px; margin: 10px; font-size: 16px; border-radius: 5px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .id-caja { background-color: #333; padding: 10px; border-radius: 5px; display: inline-block; font-weight: bold; font-family: monospace; font-size: 18px; color: #00ff00;}
     </style>
 </head>
 <body>
 
-    <h1>Transmisor de Cámara</h1>
-    <video id="miCamara" autoplay playsinline></video>
+    <h1>Cámara de Seguridad</h1>
+
+    <div id="menu">
+        <h2>¿Qué dispositivo es este?</h2>
+        <button onclick="iniciarComoCamara()">Ser la Cámara (Transmisor)</button>
+        <button onclick="iniciarComoMonitor()">Ser el Monitor (Receptor)</button>
+    </div>
+
+    <div id="seccion-camara" class="oculto">
+        <h3>Modo Cámara Activo</h3>
+        <p>Anota este ID e ingrésalo en el monitor:</p>
+        <div class="id-caja" id="mi-id">Conectando al servidor...</div>
+        <br>
+        <video id="video-local" autoplay playsinline muted></video>
+    </div>
+
+    <div id="seccion-monitor" class="oculto">
+        <h3>Modo Monitor Activo</h3>
+        <input type="text" id="id-destino" placeholder="Ingresa el ID de la cámara">
+        <button onclick="conectarACamara()">Ver en vivo</button>
+        <br>
+        <video id="video-remoto" autoplay playsinline></video>
+    </div>
 
     <script>
-        // Seleccionamos el elemento de video de arriba
-        const videoElemento = document.getElementById('miCamara');
+        let peer;
+        let flujoDeVideoLocal;
 
-        // Pedimos permiso para usar la cámara
-        async function iniciarCamara() {
+        // --- FUNCIONES DE LA CÁMARA (TRANSMIOR) ---
+        async function iniciarComoCamara() {
+            document.getElementById('menu').classList.add('oculto');
+            document.getElementById('seccion-camara').classList.remove('oculto');
+
             try {
-                // Configuramos lo que queremos capturar. 
-                // Por ahora es básico, pero más adelante aquí es donde podremos 
-                // forzar resoluciones extremas (como 4K o superiores) para 
-                // extraer el máximo nivel de detalle y nitidez del sensor.
-                const configuracion = { 
-                    video: true, 
-                    audio: false // Apagamos el audio por ahora
-                };
+                // 1. Encender la cámara local (igual que en nuestra primera prueba)
+                flujoDeVideoLocal = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('video-local').srcObject = flujoDeVideoLocal;
 
-                // Accedemos a la cámara
-                const flujoDeVideo = await navigator.mediaDevices.getUserMedia(configuracion);
-                
-                // Conectamos la cámara al elemento de video en la pantalla
-                videoElemento.srcObject = flujoDeVideo;
+                // 2. Conectarse al servidor de PeerJS para obtener un ID
+                peer = new Peer(); 
+
+                peer.on('open', function(id) {
+                    // El servidor nos dio un ID único. Lo mostramos en pantalla.
+                    document.getElementById('mi-id').innerText = id;
+                });
+
+                // 3. Esperar pacientemente a que un monitor nos llame
+                peer.on('call', function(llamada) {
+                    console.log("¡El monitor se está conectando!");
+                    // Contestamos la llamada enviando nuestro video en vivo
+                    llamada.answer(flujoDeVideoLocal); 
+                });
 
             } catch (error) {
-                console.error("Error al acceder a la cámara: ", error);
-                alert("No se pudo acceder a la cámara. Revisa los permisos.");
+                alert("Error al acceder a la cámara. Revisa los permisos.");
             }
         }
 
-        // Ejecutamos la función al cargar la página
-        iniciarCamara();
-    </script>
+        // --- FUNCIONES DEL MONITOR (RECEPTOR) ---
+        function iniciarComoMonitor() {
+            document.getElementById('menu').classList.add('oculto');
+            document.getElementById('seccion-monitor').classList.remove('oculto');
+            
+            // Nos conectamos al servidor de PeerJS, pero no necesitamos mostrar nuestro propio ID
+            peer = new Peer(); 
+        }
 
+        function conectarACamara() {
+            const idCamara = document.getElementById('id-destino').value;
+            if (!idCamara) return alert("Por favor, ingresa un ID");
+
+            // 1. Hacemos la "llamada" al ID de la cámara
+            // Como somos el monitor, no enviamos video, por eso pasamos un flujo vacío
+            const llamada = peer.call(idCamara, crearFlujoVacio());
+
+            // 2. Cuando la cámara conteste y nos mande su video, lo mostramos en pantalla
+            llamada.on('stream', function(flujoRemoto) {
+                document.getElementById('video-remoto').srcObject = flujoRemoto;
+            });
+        }
+
+        // Función auxiliar: Crea un flujo de medios vacío (necesario porque PeerJS requiere enviar *algo* al llamar)
+        function crearFlujoVacio() {
+            let ctx = new AudioContext();
+            let dest = ctx.createMediaStreamDestination();
+            return dest.stream;
+        }
+    </script>
 </body>
 </html>
